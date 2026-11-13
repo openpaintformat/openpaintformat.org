@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open Paint Format</title>
+<meta name="description" content="An open, implementation-independent format for portable miniature-painting data.">
+<style>
+  :root { --bg: #fbfaf7; --fg: #1f1d1a; --muted: #6b665e; --line: #e3dfd6; --link: #1d5fa8; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #171614; --fg: #ece8e1; --muted: #a39d93; --line: #34312c; --link: #7fb2ec; }
+  }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+         font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 44rem; margin: 0 auto; padding: 3rem 1rem 4rem; }
+  h1 { font-size: 2rem; margin: 0 0 .25rem; }
+  h2 { font-size: 1.1rem; margin: 2.5rem 0 .5rem; }
+  p.lede { color: var(--muted); margin: 0 0 2rem; }
+  a { color: var(--link); }
+  table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+  th, td { text-align: left; padding: .45rem .5rem .45rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-weight: 600; color: var(--muted); }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .88em; overflow-wrap: anywhere; }
+  footer { margin-top: 3rem; color: var(--muted); font-size: .85rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Open Paint Format</h1>
+  <p class="lede">An open, implementation-independent format for portable miniature-painting data:
+  recipes, palettes, paint inventories, projects and techniques.</p>
+
+  <p>The specification, schemas, conformance corpus and reference validator live at
+  <a href="https://github.com/openpaintformat/standard">github.com/openpaintformat/standard</a>.
+  Version 1 is a release candidate; it is not frozen yet.</p>
+
+  <h2>JSON Schemas</h2>
+  <p>Each schema is served at the URL its <code>$id</code> names.</p>
+  <table>
+    <thead><tr><th>Spec</th><th>Schema</th></tr></thead>
+    <tbody>
+      <tr><td>Common</td><td><a href="/schemas/common/v1/common.schema.json"><code>/schemas/common/v1/common.schema.json</code></a></td></tr>
+      <tr><td>Recipe</td><td><a href="/schemas/recipe/v1/recipe.schema.json"><code>/schemas/recipe/v1/recipe.schema.json</code></a></td></tr>
+      <tr><td>Palette</td><td><a href="/schemas/palette/v1/palette.schema.json"><code>/schemas/palette/v1/palette.schema.json</code></a></td></tr>
+      <tr><td>Inventory</td><td><a href="/schemas/inventory/v1/inventory.schema.json"><code>/schemas/inventory/v1/inventory.schema.json</code></a></td></tr>
+      <tr><td>Project</td><td><a href="/schemas/project/v1/project.schema.json"><code>/schemas/project/v1/project.schema.json</code></a></td></tr>
+      <tr><td>Technique</td><td><a href="/schemas/technique/v1/technique.schema.json"><code>/schemas/technique/v1/technique.schema.json</code></a></td></tr>
+      <tr><td>Bundle</td><td><a href="/schemas/bundle/v1/bundle.schema.json"><code>/schemas/bundle/v1/bundle.schema.json</code></a></td></tr>
+    </tbody>
+  </table>
+
+  <footer>
+    Schemas are licensed under the <a href="/schemas/LICENSE">Apache License 2.0</a>
+    (<a href="/schemas/NOTICE">NOTICE</a>). Maintained by BrushCodex.
+  </footer>
+</main>
+</body>
+</html>

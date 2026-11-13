@@ -1,0 +1,88 @@
+name: Publish openpaintformat.org
+
+# Serves the Open Paint Format JSON Schemas at the URLs their $id names:
+#   https://openpaintformat.org/schemas/<spec>/v1/<spec>.schema.json
+# The schemas are not copied into this repository. Each build checks out
+# openpaintformat/standard at STANDARD_REF and publishes its schemas/ directory
+# unchanged, so the standard stays the only source.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      standard_ref:
+        description: 'Tag, branch or commit of openpaintformat/standard to publish (default: STANDARD_REF below)'
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  # Before the v1 freeze this follows main. At the freeze it becomes the release tag.
+  STANDARD_REF: main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the site
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+
+      - name: Check out the standard
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          repository: openpaintformat/standard
+          ref: ${{ inputs.standard_ref || env.STANDARD_REF }}
+          path: standard
+          persist-credentials: false
+
+      - name: Assemble the site
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _site
+          cp -R site/. _site/
+          cp -R standard/schemas _site/schemas
+          cp standard/NOTICE _site/schemas/NOTICE
+
+          # Every schema must be served at exactly the URL its $id names.
+          fail=0
+          while IFS= read -r f; do
+            rel=${f#_site/}
+            id=$(jq -r '."$id"' "$f")
+            if [ "$id" != "https://openpaintformat.org/$rel" ]; then
+              echo "::error file=$rel::\$id is $id, expected https://openpaintformat.org/$rel"
+              fail=1
+            fi
+          done < <(find _site/schemas -name '*.schema.json' | sort)
+          [ "$fail" -eq 0 ]
+
+          sha=$(git -C standard rev-parse HEAD)
+          echo "{\"standard\":\"openpaintformat/standard\",\"commit\":\"$sha\",\"built\":\"$(date -u +%FT%TZ)\"}" > _site/build.json
+          echo "Published schemas from openpaintformat/standard@$sha"
+          find _site -type f | sort
+
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
